@@ -1,0 +1,80 @@
+---
+title: "Ridge Regression and LASSO"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r}
+library(readxl)
+
+buildings <- read_excel("/Users/adityajaiswal/Desktop/Residential-Building-Data-Set.xlsx", sheet = "Data", skip = 1)
+buildings$`START QUARTER`
+
+```
+
+```{=tex}
+The Residential Building Data Set is a collection of data that describes various aspects of residential buildings constructed in various regions of Iran. 
+
+Description of some predictor variables:-
+
+1. V2 :- Total floor area of the building
+2. V3 :- Total lot area of the building
+3. V4 :- Total preliminary estimated construction cost based on the prices at the beginning of the project
+4. V6 :- Equivalent preliminary estimated construction cost based on the prices at the beginning of the project in a selected base year a
+5. V8 :- Price of the unit at the beginning of the project per m2
+
+These are some of the many predictors that are used to predict two response variables: “Actual Sales Price” and “Actual Construction Cost”, which are the actual sales price and construction costs of the buildings, respectively.
+```
+```{r}
+library(caret)
+library(ggplot2)
+library(lattice)
+library(glmnet)
+
+buildings.price <- buildings[-109]
+buildings.cost <- buildings[-108]
+
+
+set.seed(123)
+cv.ridge.price <- cv.glmnet(as.matrix(buildings.price[, -9]), buildings.price$`V-9`, alpha = 0, nfolds = 10)
+plot(cv.ridge.price)
+lambda.min.price <- cv.ridge.price$lambda.min
+ridge.fit.price <- glmnet(as.matrix(buildings.price[, -9]), buildings.price$`V-9`, alpha = 0, lambda = lambda.min.price)
+
+# LASSO for sales price
+set.seed(123)
+cv.lasso.price <- cv.glmnet(as.matrix(buildings.price[, -9]), buildings.price$`V-9`, alpha = 1, nfolds = 10)
+plot(cv.lasso.price)
+lambda.min.price <- cv.lasso.price$lambda.min
+lasso.fit.price <- glmnet(as.matrix(buildings.price[, -9]), buildings.price$`V-9`, alpha = 1, lambda = lambda.min.price)
+
+# Ridge regression for construction cost
+set.seed(123)
+cv.ridge.cost <- cv.glmnet(as.matrix(buildings.cost[, -9]), buildings.cost$`V-10`, alpha = 0, nfolds = 10)
+plot(cv.ridge.cost)
+lambda.min.cost <- cv.ridge.cost$lambda.min
+ridge.fit.cost <- glmnet(as.matrix(buildings.cost[, -9]), buildings.cost$`V-10`, alpha = 0, lambda = lambda.min.cost)
+
+# LASSO for construction cost
+set.seed(123)
+cv.lasso.cost <- cv.glmnet(as.matrix(buildings.cost[, -9]), buildings.cost$`V-10`, alpha = 1, nfolds = 10)
+plot(cv.lasso.cost)
+lambda.min.cost <- cv.lasso.cost$lambda.min
+lasso.fit.cost <- glmnet(as.matrix(buildings.cost[, -9]), buildings.cost$`V-10`, alpha = 1, lambda = lambda.min.cost)
+
+par(mfrow=c(2,2))
+plot(ridge.fit.price, xvar = "lambda", main = "Ridge Regression: Sales Price")
+plot(lasso.fit.price, xvar = "lambda", main = "LASSO: Sales Price")
+plot(ridge.fit.cost, xvar = "lambda", main = "Ridge Regression: Construction Cost")
+plot(lasso.fit.cost, xvar = "lambda", main = "LASSO: Construction Cost")
+
+
+
+
+
+
+
+
+
+```
