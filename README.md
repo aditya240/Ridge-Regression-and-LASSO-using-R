@@ -8,7 +8,7 @@ The dataset, named "Residential Building Data Set", comprises various attributes
 
 ## File Structure
 - `Residential-Building-Data-Set.xlsx`: The Excel file containing the dataset.
-- `Homework 5.Rmd`: The R Markdown file containing all the code, descriptions, and visualizations.
+- `ridge_and_lasso.Rmd`: The R Markdown file containing all the code, descriptions, and visualizations.
 
 ## Libraries Used
 - `readxl`: For reading Excel files.
